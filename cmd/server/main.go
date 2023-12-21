@@ -1,15 +1,25 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
-	"github.com/canhcutcon/pkg/gee"
+	"github.com/canhcutcon/server-go-postgres/pkg/gee"
 )
 
 func main() {
 	r := gee.New()
 
 	r.GET("/", func(w http.ResponseWriter, req *http.Request) {
-		c.HTML(http.StatusOK, "<h1>Hello Gee</h1>")
+		w.Write([]byte("hello world"))
+		fmt.Fprintf(w, "URL.Path = %q\n", req.URL.Path)
 	})
+
+	r.GET("/hello", func(w http.ResponseWriter, req *http.Request) {
+		for k, v := range req.Header {
+			fmt.Fprintf(w, "Header[%q] = %q\n", k, v)
+		}
+	})
+
+	r.Run(":9999")
 }
