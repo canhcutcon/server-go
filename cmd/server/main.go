@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/canhcutcon/server-go/internal/pkg/gee"
-	// "github.com/canhcutcon/server-go/pkg/gee"
+	"github.com/canhcutcon/server-go/pkg/gee"
 )
 
 func main() {
