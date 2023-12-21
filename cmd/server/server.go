@@ -1,10 +1,10 @@
-package server
+package main
 
 import (
 	"fmt"
 	"net/http"
 
-	"github.com/canhcutcon/server-go-postgres/pkg/gee"
+	"github.com/canhcutcon/server-go/pkg/gee"
 )
 
 func main() {
