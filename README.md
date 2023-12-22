@@ -163,3 +163,5 @@ Incorrect Import Path:
 Verify that the import path github.com/canhcutcon/server-go-postgres/pkg/gee is correct. If this is a local package within your project, it should be referenced relative to the module name declared in your go.mod file.
 If gee is a local package, its import path should typically be something like module-name/pkg/gee, where module-name is the module name declared in your go.mod file.
 To further assist, I can examine the go.mod file and the structure of the gee package in your project. This will help in determining if the issue is due to an incorrect import path or a misconfigured module. Shall we proceed with this examination?
+
+which frame work and structure should choose when build a client-server application with golang?
