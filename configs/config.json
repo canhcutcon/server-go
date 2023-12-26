@@ -1,0 +1,49 @@
+{
+  "database": {
+    "uri": "mongodb://localhost:27017/social-media-server"
+  },
+  "port": 8080,
+  "documentation": {
+    "enable": true,
+    "schemes": "http",
+    "options": {
+      "info": {
+        "title": "Social Media API Documentation",
+        "version": "0.0.1"
+      },
+      "grouping": "tags",
+      "documentationPage": true
+    }
+  },
+  "jwt": {
+    "secret": "smart-house-server-ahihihi",
+    "expiredIn": "10y"
+  },
+  "env": "development",
+  "redis": {
+    "prefix": "development",
+    "host": "",
+    "port": 0,
+    "password": ""
+  },
+  "email": {
+    "username": "canhcut02032001",
+    "password": "hmlmouqeblhvcycb",
+    "api_key": "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"
+  },
+  "phoneOtp": {
+    "base_url": "https://k3yq9e.api.infobip.com",
+    "api_key": "App 9fbd3153dc7377f1ba6193612df59564-4117a046-706a-4993-ab75-659de8e79d63",
+    "media_type": "application/json"
+  },
+  "aws": {
+    "bucket_name": "imagecanhcut",
+    "cloud_front_url": "https://d2rd596stqiu8q.cloudfront.net/",
+    "region": "ap-southeast-1",
+    "access_key_id": "AKIAYVTTDTIC2SALMXXQ",
+    "secret_access_key": "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"
+  },
+  "geocode": {
+    "rapi_api_key": "62e6335913msh7b5181fb2ba5a59p116e14jsncd946f210030"
+  }
+}

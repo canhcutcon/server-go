@@ -165,3 +165,23 @@ If gee is a local package, its import path should typically be something like mo
 To further assist, I can examine the go.mod file and the structure of the gee package in your project. This will help in determining if the issue is due to an incorrect import path or a misconfigured module. Shall we proceed with this examination?
 
 which frame work and structure should choose when build a client-server application with golang?
+
+#### SOCIAL MEDIA APPLICATION
+
+1. Viper: The-Twelve-factor-app to :
+
+- Setting default for applications
+- Reading from JSON, TOML, YAML, HCL, .env files, and Java properties config files
+- Reading from environment variables — it has a precedence order in which it reads from the configuration file:
+  an explicit call to Set
+  flag
+  .env files
+  config
+  key/value store
+  default
+
+Using viper:
+
+```
+go get github.com/spf13/viper
+```
