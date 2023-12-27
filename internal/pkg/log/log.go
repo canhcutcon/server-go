@@ -40,11 +40,11 @@ func SetLogger(logger logger.Logger) error {
 }
 
 func Init() {
-	serverLog, err := std.New(nil)
+	serverLog, err := std.NewInstance(nil)
 	if err != nil {
 		return
 	}
-	SetLogger(serverLog)
+	SetLogger(logger.Logger(serverLog))
 }
 
 func SetConfig(config *logger.ConfigLogger) error {

@@ -3,33 +3,34 @@ package std
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
+
 	"server-go/internal/pkg/log/logger"
 )
 
-var _ logger.Logger = (*logger.Logger)(nil) // this used to check the logger is the pointer to the logger
+var _ logger.Logger = (*Logger)(nil)
 
-var Logger struct {
-	logger *logger.Logger
+type Logger struct {
+	logger *log.Logger
 	config *logger.ConfigLogger
 }
 
-var levelFormat = []string{
-	"DEBUG",
-	"INFO",
-	"WARN",
-	"ERROR",
-	"FATAL",
-} // this used to map the level with the string
-
-// SetConfig is used to set the config for the logger
-func SetConfig(config *logger.ConfigLogger) error {
-	Logger.config = config
-	return nil
+// SetConfig implements logger.Logger.
+func (*Logger) SetConfig(config *logger.ConfigLogger) error {
+	panic("unimplemented")
 }
 
+var levelFormat = []string{
+	"[DEBUG]",
+	"[INFO]",
+	"[WARN]",
+	"[ERROR]",
+	"[FATAL]",
+} // this used to map the level with the string
+
 func formatFields(fields logger.KV) string {
-	var str string
+	str := ""
 	for k, v := range fields {
 		str += fmt.Sprintf("%s=%s ", k, v)
 		if str[len(str)-1] == ' ' {
@@ -39,31 +40,22 @@ func formatFields(fields logger.KV) string {
 	return str
 }
 
-func New(config *logger.ConfigLogger) (*Logger, error) {
-	stdLogger, err := newLogger(config)
-	if err != nil {
-		return nil, err
-	}
-	return &Logger{
-		logger: stdLogger,
-		config: config,
-	}, nil
+func NewInstance(config *logger.ConfigLogger) (*Logger, error) {
+	return nil, nil
 }
 
-func newLogger(config *logger.ConfigLogger) (*logger.Logger, error) { // this used to create the new logger
-	stdLogger := &logger.Logger{} // this used to create the new logger, &logger.NewLogger is the pointer to the logger
-
-	if config == nil { // this used to check the config is nil or not
-		// if the config is nil, then set the default config
+func New(config *logger.ConfigLogger) (*log.Logger, error) {
+	stdLogger := &log.Logger{}
+	if config == nil {
 		config = &logger.ConfigLogger{
-			Level:      logger.InfoLevel,
-			TimeFormat: logger.DefaultTimeFormat,
+			Level:         logger.DebugLevel,
+			LogFile:       "",
+			TimeForFormat: logger.DefaultTimeFormat,
+			Caller:        false,
+			UseColor:      false,
+			UseJSON:       false,
 		}
-		stdLogger.SetOutput(os.Stderr) // this used to set the output for the logger, os.Stderr is the standard error
-	}
-
-	if config.TimeForFormat == "" {
-		config.TimeForFormat = logger.DefaultTimeFormat
+		stdLogger.SetOutput(os.Stderr)
 	}
 
 	if config.LogFile != "" {
@@ -71,85 +63,103 @@ func newLogger(config *logger.ConfigLogger) (*logger.Logger, error) { // this us
 		if err != nil {
 			return nil, err
 		}
-
-		writers := io.MultiWriter(os.Stderr, file)
-		stdLogger.SetOutput(writers)
+		writes := io.MultiWriter(os.Stderr, file)
+		stdLogger.SetOutput(writes)
 	}
 
 	return stdLogger, nil
 }
 
-// SetConfig is used to set the config for the logger
-func (l *Logger) SetConfig(config *logger.ConfigLogger) error {
-	l.config = config
+// SetConfig is used to reset the config for the logger
+func (l *Logger) ResetLogger(config *logger.ConfigLogger) error {
 	return nil
 }
 
-// SetLevel is used to set the level for the logger
+// SetLevel is used to reset log level for the logger
 func (l *Logger) SetLevel(level logger.Level) error {
-	l.config.Level = level
 	return nil
+}
+
+// Print is used to print the message
+func (l *Logger) Print(level logger.Level, args ...interface{}) {
+	if level < l.config.Level {
+		return
+	}
+	l.logger.Print(levelFormat[level], args)
+}
+
+func (l *Logger) Printf(level logger.Level, format string, args ...interface{}) {
+	if level < l.config.Level {
+		return
+	}
+	format = levelFormat[level] + " " + format
+	l.logger.Printf(format, args)
+}
+
+func (l *Logger) Println(level logger.Level, args ...interface{}) {
+	if level < l.config.Level {
+		return
+	}
+	l.logger.Print(levelFormat[level], args)
+}
+
+func (l *Logger) Printw(level logger.Level, msg string, kv logger.KV) { // this used to print the message with key value
+	if level < l.config.Level {
+		return
+	}
+	l.logger.Println(levelFormat[level], msg, formatFields(kv))
 }
 
 func (l *Logger) Debug(args ...interface{}) {
-	l.logger.Print(logger.DebugLevel, args...)
+	l.Print(logger.DebugLevel, args)
 }
 
 func (l *Logger) Debugf(format string, args ...interface{}) {
-	l.logger.Printf(logger.DebugLevel, format, args...)
+	l.Printf(logger.DebugLevel, format, args)
 }
 
 func (l *Logger) Debugln(args ...interface{}) {
-	l.logger.Println(logger.DebugLevel, args)
+	l.Println(logger.DebugLevel, args)
 }
 
 func (l *Logger) Debugw(msg string, kv logger.KV) {
-	l.logger.Printw(logger.DebugLevel, msg, formatFields(kv))
+	l.Printw(logger.DebugLevel, msg, kv)
 }
 
 func (l *Logger) Info(args ...interface{}) {
-	l.logger.Info(args...)
-	fmt.Print(logger.InfoLevel, args)
+	l.Info(args...)
 }
 
 func (l *Logger) Infof(format string, args ...interface{}) {
-	l.logger.Infof(format, args...)
-	fmt.Print(logger.InfoLevel, format, args)
+	l.Infof(format, args...)
 }
 
 func (l *Logger) Infow(msg string, kv logger.KV) {
-	l.logger.Infow(msg, kv)
-	fmt.Print(logger.InfoLevel, msg, kv)
+	l.Infow(msg, kv)
 }
 
 func (l *Logger) Warn(args ...interface{}) {
-	l.logger.Warn(args...)
-	fmt.Print(logger.WarnLevel, args)
+	l.Warn(args...)
 }
 
 func (l *Logger) Warnf(format string, args ...interface{}) {
-	l.logger.Warnf(format, args...)
-	fmt.Print(logger.WarnLevel, format, args)
+	l.Warnf(format, args...)
 }
 
 func (l *Logger) Warnw(msg string, kv logger.KV) {
-	l.logger.Warnw(msg, kv)
-	fmt.Print(logger.WarnLevel, msg, kv)
+	l.Warnw(msg, kv)
 }
 
 func (l *Logger) Error(args ...interface{}) {
-	l.logger.Error(args...)
-	fmt.Print(logger.ErrorLevel, args)
+	l.Error(args...)
 }
 
 func (l *Logger) Errorf(format string, args ...interface{}) {
-	l.logger.Errorf(format, args...)
-	fmt.Print(logger.ErrorLevel, format, args)
+	l.Errorf(format, args...)
 }
 
 func (l *Logger) Errorw(msg string, kv logger.KV) {
-	l.logger.Errorw(msg, kv)
-	fmt.Print(logger.ErrorLevel, msg, kv)
+	l.Errorw(msg, kv)
 }
 
 func (l *Logger) Fatal(args ...interface{}) {
@@ -158,41 +168,9 @@ func (l *Logger) Fatal(args ...interface{}) {
 }
 
 func (l *Logger) Fatalf(format string, args ...interface{}) {
-	l.logger.Fatalf(format, args...)
-	fmt.Print(logger.FatalLevel, format, args)
+	l.Fatalf(format, args...)
 }
 
 func (l *Logger) Fatalw(msg string, kv logger.KV) {
-	l.logger.Fatalw(msg, kv)
-	fmt.Print(logger.FatalLevel, msg, kv)
-}
-
-// Print is used to print the message
-func (l *Logger) Print(level logger.Level, args ...interface{}) {
-	if level < l.config.Level {
-		return
-	}
-	l.logger.Print(levelFormat[level], args...)
-}
-
-func (l *Logger) Printf(level logger.Level, format string, args ...interface{}) {
-	if level < l.config.Level {
-		return
-	}
-	format = levelFormat[level] + " " + format
-	l.logger.Printf(format, args...)
-}
-
-func (l *Logger) Println(level logger.Level, args ...interface{}) {
-	if level < l.config.Level {
-		return
-	}
-	l.logger.Printw(levelFormat[level], args)
-}
-
-func (l *Logger) Printw(level logger.Level, msg string, kv logger.KV) { // this used to print the message with key value
-	if level < l.config.Level {
-		return
-	}
-	l.logger.Printw(levelFormat[level], msg, formatFields(kv))
+	l.Fatalw(msg, kv)
 }

@@ -29,6 +29,7 @@ type (
 		SetLevel(level Level) error                // this used to set the level for the logger
 		Debug(args ...interface{})                 // this used to log the debug message
 		Debugf(format string, args ...interface{}) // this used to log the debug message with format
+		Debugw(msg string, kv KV)                  // this used to log the debug message with key value
 		Info(args ...interface{})                  // this used to log the info message
 		Infof(format string, args ...interface{})  // this used to log the info message with format
 		Infow(msg string, kv KV)                   // this used to log the info message with key value
