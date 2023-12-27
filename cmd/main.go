@@ -1,10 +1,11 @@
 package main
 
-import "server-go/internal/pkg/log"
+import (
+	"fmt"
+	"server-go/configs"
+)
 
 func main() {
-	log.Init()
-	log.Debug("debug")
-	log.Info("info")
-	log.Warn("warn")
+	accessKey := configs.GetConfig().AWS.AccessKey
+	fmt.Println(accessKey)
 }

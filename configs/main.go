@@ -1,6 +1,7 @@
 package configs
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/spf13/viper"
@@ -8,9 +9,11 @@ import (
 
 // Config is the struct for the configuration of the application
 type Config struct {
-	DatabaseUri string `mapstructure:"database.uri" default:"mongodb://localhost:27017"`
-	Port        string `mapstructure:"port" default:":8080"`
-	Jwt         struct {
+	Database struct {
+		Uri string `mapstructure:"uri" default:"mongodb://localhost:27017"`
+	} `mapstructure:"database"`
+	Port string `mapstructure:"port" default:":8080"`
+	Jwt  struct {
 		Secrect string `mapstructure:"secrect" default:"secrect"`
 		Expires int64  `mapstructure:"expires" default:"3600"`
 	} `mapstructure:"jwt"`
@@ -38,19 +41,19 @@ type Config struct {
 		Username string `mapstructure:"username" default:""`
 		Password string `mapstructure:"password" default:""`
 		APIKey   string `mapstructure:"api_key" default:""`
-	}
+	} `mapstructure:"email"`
 	PhoneOtp struct {
 		BaseUrl   string `mapstructure:"base_url" default:""`
 		APIKey    string `mapstructure:"api_key" default:""`
 		MediaType string `mapstructure:"media_type" default:""`
-	}
+	} `mapstructure:"phone_otp"`
 	AWS struct {
 		BucketName      string `mapstructure:"bucket_name" default:""`
 		CloudFrontUrl   string `mapstructure:"cloud_front_url" default:""`
 		Region          string `mapstructure:"region" default:""`
 		AccessKey       string `mapstructure:"access_key_id" default:""`
 		SecretAccessKey string `mapstructure:"secret_access_key" default:""`
-	}
+	} `mapstructure:"aws"`
 	GeoCode struct {
 		RapidApiKey string `mapstructure:"rapid_api_key" default:""`
 	} `mapstructure:"geocode"`
@@ -59,30 +62,36 @@ type Config struct {
 // Path: configs/main.go
 var configuration Config // global variable to store the configuration
 
-func init() {
-	// initialize the configuration
-	configuration = Config{}
-
-	// load the configuration from environment variables
-	// err := envconfig.Process("", &configuration)
-}
-
 // GetConfig returns the configuration of the application
 func GetConfig() Config {
+	if configuration == (Config{}) { // if the configuration is empty, then load the configuration
+		LoadAllConfigurations()
+	}
 	return configuration
 }
 
-func LoadAllConfigurations() {
-	viper.AddConfigPath("./config")
-	viper.SetConfigName("config")
-	viper.SetConfigType("json")
+func GetAllKeys() []string {
+	var jsonKeys []string
+
+	v := reflect.ValueOf(configuration)
+	typeOfS := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		jsonKeys = append(jsonKeys, typeOfS.Field(i).Tag.Get("mapstructure"))
+	}
+	return jsonKeys
+}
+
+func LoadAllConfigurations() error {
+	viper.AddConfigPath("./configs")
+	viper.SetConfigName("config") // Register config file name (no extension)
+	viper.SetConfigType("json")   // Look for specific type
 	viper.ReadInConfig()
 
-	config := Config{}
-	key := reflect.TypeOf(config)
-
-	for i := 0; i < key.NumField(); i++ {
-		field := key.Field(i)
-		viper.BindEnv(field.Tag.Get("mapstructure"))
+	key := GetAllKeys()
+	for _, k := range key {
+		// log.Info("Load config key::", k)
+		fmt.Println("Load config key::", k)
+		viper.SetDefault(k, viper.Get(k))
 	}
+	return viper.Unmarshal(&configuration) // Find and read the config file
 }
