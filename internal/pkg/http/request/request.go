@@ -107,14 +107,21 @@ func (r *RequestType) Compile() (*http.Request, error) {
 
 	// flag the version matching
 	// this logic might be moved to infrastructure instead of here
+	// flag the version matching
+	// this logic might moved to infrastructure instead here
+	// we can easily disable this without any side-effect
 	if _requestVersionMatching && !r.noVersion {
 		// set the version selection header
 		rvcHeader := ""
 		vHeader, vRouters := getRoutingHeader(r.ctx)
 		for k, v := range vRouters {
 			if k == u.Hostname() {
+				// add the version selection header because the request is sent to the same host
 				req.Header.Set("routers-version-select", vHeader)
 			} else {
+				// add header for route-version-select
+				// all unmatched value needs to be appended
+				// avoid fmt.Sprintf because it will allocate
 				rvcHeader += k + "|" + v + ","
 			}
 		}
@@ -126,14 +133,27 @@ func (r *RequestType) Compile() (*http.Request, error) {
 	return req, nil
 }
 
+/*
+Get the routing header from the context return the header and decoded routing header
+routing header means to what version that the request is directed to
+with this special header, we want to enable A/B testing and specific version selection in request
+for example reqeust to service1.cluster.local with header:
+[route-version-select] service2.cluster.local|0.1.2,service3.cluster.local|0.2
+will inform service1 to contact service 2 with version 0.1.2 and service with version 0.2
+*/
 func getRoutingHeader(ctx context.Context) (string, map[string]string) {
 	v := ctx.Value(RoutingContext)
 	header, ok := v.(string)
 
+	// make sure the header is not empty
 	if !ok || header == "" {
 		return "", nil
 	}
 
+	/*
+		multiple speciation in one header/ context is allowed and the version selection is using smver for the specification
+		semver is a versioning system that uses MAJOR.MINOR.PATCH format
+	*/
 	routings := strings.Split(header, ",")
 	vRouting := make(map[string]string)
 

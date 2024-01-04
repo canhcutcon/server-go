@@ -21,6 +21,18 @@ type RequestConst struct {
 	Method       string
 }
 
+// New context
+func New(constructor RequestConst) *RequestContext {
+	rc := RequestContext{
+		httpResponseWriter: constructor.HTTPResponse,
+		httpRequest:        constructor.HTTPRequest,
+		address:            constructor.Address,
+		path:               constructor.Path,
+		method:             constructor.Method,
+	}
+	return &rc
+}
+
 func NewRequestContext(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) *RequestContext {
 	return &RequestContext{
 		httpResponseWriter: httpResponseWriter,

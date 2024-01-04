@@ -2,56 +2,59 @@ package log
 
 import (
 	"errors"
+
 	"server-go/internal/pkg/log/logger"
 	"server-go/internal/pkg/log/logger/std"
 )
 
+// Config of log
 type Config struct {
-	Level         string
-	LogFile       string
-	TimeForFormat string
-	Caller        bool
-	UseColor      bool
-	UseJSON       bool
+	Level string
+	// LogFile for log to file
+	// this is not needed by default
+	// application is expected to run in containerized environment
+	LogFile    string
+	DebugFile  string
+	TimeFormat string
+	// set true to log line numbers
+	// make sure you understand the overhead when use this
+	Caller bool
+	// set true to colorize log, only work in console
+	UseColor bool
+	// use json format
+	UseJSON bool
 }
 
 var (
-	// DefaultTimeFormat is the default time format for the logger
 	_debugLogger logger.Logger
 	_infoLogger  logger.Logger
 	_warnLogger  logger.Logger
 	_errorLogger logger.Logger
 	_fatalLogger logger.Logger
 
-	errInvalidLevel = errors.New("invalid level")
-	errInvalidLog   = errors.New("invalid log")
+	errInvalidLevel  = errors.New("log: invalid log level")
+	errInvalidLogger = errors.New("log: invalid logger")
 )
 
-func SetLogger(logger logger.Logger) error {
-	if logger == nil {
-		return errInvalidLog
-	}
-	_debugLogger = logger
-	_infoLogger = logger
-	_warnLogger = logger
-	_errorLogger = logger
-	_fatalLogger = logger
-	return nil
-}
-
-func Init() {
-	serverLog, err := std.NewInstance(nil)
+func init() {
+	backend, err := std.New(nil)
 	if err != nil {
 		return
 	}
-	SetLogger(logger.Logger(serverLog))
+	SetLogger(backend)
 }
 
-func SetConfig(config *logger.ConfigLogger) error {
-	if config == nil {
-		return errInvalidLog
-	}
+// SetLogger to set default logger backend
+func SetLogger(backend logger.Logger) {
+	_debugLogger = backend
+	_infoLogger = backend
+	_warnLogger = backend
+	_errorLogger = backend
+	_fatalLogger = backend
+}
 
+// SetConfig to the current logger
+func SetConfig(config *logger.Config) error {
 	if err := _debugLogger.SetConfig(config); err != nil {
 		return err
 	}
@@ -71,23 +74,30 @@ func SetConfig(config *logger.ConfigLogger) error {
 	if err := _fatalLogger.SetConfig(config); err != nil {
 		return err
 	}
+
 	return nil
 }
 
+// SetLevel of log
 func SetLevel(level logger.Level) {
+	setLevel(level)
+}
+
+// SetLevelString to set log level using string
+func SetLevelString(level string) {
+	setLevel(logger.StringToLevel(level))
+}
+
+// setLevel function set the log level to the desired level for defaultLogger and _debugLogger
+// _debugLogger level can go to any level, but not with defaultLogger
+// this to make sure _debugLogger to be disabled when level is > debug
+// and defaultLogger to not overlap with _debugLogger
+func setLevel(level logger.Level) {
 	_debugLogger.SetLevel(level)
 	_infoLogger.SetLevel(level)
 	_warnLogger.SetLevel(level)
 	_errorLogger.SetLevel(level)
 	_fatalLogger.SetLevel(level)
-}
-
-func SetLevelLogger(level logger.Level) {
-	SetLevel(level)
-}
-
-func SetLevelLoggerString(level string) {
-	SetLevel(logger.StringToLevel(level))
 }
 
 // Debug function

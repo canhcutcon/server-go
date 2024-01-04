@@ -185,3 +185,62 @@ Using viper:
 ```
 go get github.com/spf13/viper
 ```
+
+## **REST API best practices**
+
+- Exchange of data via JSON(sử dụng JSON để chuyển đổi dữ liệu): When we use REST API architecture we should use JSON format for sending data
+  because:
+  other format like YAML, XML lack some common procedures
+
+- Nesting on endpoints(endpoint lồng nhau): The resultant endpoint will become https://www.example.com/posts/postId/comments. This is a good practice through which we can avoid mirroring database structure in our endpoints, keeping the data safe from attackers.
+
+- Using nouns insted of verd
+
+Comparisons of Different API Architecture Styles
+
+#REST API
+
+REST API can be useful in the following case:
+
+Should use:
+
+- Flexibility: REST also provides flexibility due to its lesser burden on the server side than GraphQL
+- As a wrapper: We can use REST interface can also be used around the gRPC channel internally to route the request to other APIs
+- Rest is comprehend: Rest is the most popular framework in the industry, and it will be very easy for developer to be able to use API
+
+Avoid:
+
+- In the event-driven system
+- In big data processing
+
+## GraphQL
+
+Benefit:
+
+- When there is a client application gathering data from multiple data sources. GraphQL aggregates data from multiple data sources and sends a consolidated response to the client. For example, in the case of a Stripe payment gateway, the data is retrieved from various endpoints, including customers, invoices, charges, and so on.
+- When many client applications share one data source, but their view is different. GraphQL allows the applications to access the shared data where they can use it in a way that makes sense. Via GraphQL, applications can ask for the specific fields they want to present to the user instead of requesting all the fields.
+
+Should use:
+
+- When application is requesting data from multiple sources
+- When multiple applications share a single database
+
+Avoid:
+
+- Server - to - server communication.
+
+## gRPC
+
+The gRPC API framework combines all the performance improvement and capabilities of HTTP/2 as a single package. It can be utilized in several cases that require high throughput backends to communicate with limited CPU and memory devices. In connection with this, gRPC is a framework with built-in features required to run a system and efficient serialization and deserialization capabilities.
+
+Should use:
+
+- When building low latency, highly scalable distributed system
+- To create a backend system with a large number of microservices
+
+Avoid:
+
+- If the developer's or consumer’s language is not supported by the framework
+- In applications if they are calling a limited number of back-end services
+
+

@@ -1,60 +1,64 @@
 package logger
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
 type (
-	// Logger is the interface for the logger
-	// KV is the key value pair for the logger
-	// this used to pass the data to the logger with function
-	KV    map[string]interface{}
-	Level int // level of logger
+	// KV is a type for logging with more information
+	// this used by with function
+	KV map[string]interface{}
 
-	ConfigLogger struct {
-		Level         Level
-		LogFile       string
-		TimeForFormat string
-		Caller        bool
-		UseColor      bool
-		UseJSON       bool
-	}
-
+	// Logger interface
 	Logger interface {
-		// Debug logs a message at level Debug on the standard logger.
-		SetConfig(config *ConfigLogger) error      // this used to set the config for the logger
-		SetLevel(level Level) error                // this used to set the level for the logger
-		Debug(args ...interface{})                 // this used to log the debug message
-		Debugf(format string, args ...interface{}) // this used to log the debug message with format
-		Debugw(msg string, kv KV)                  // this used to log the debug message with key value
-		Info(args ...interface{})                  // this used to log the info message
-		Infof(format string, args ...interface{})  // this used to log the info message with format
-		Infow(msg string, kv KV)                   // this used to log the info message with key value
-		Warn(args ...interface{})                  // this used to log the warn message
+		// this method is not concurrently safe to acess
+		// preferable to create a new logger instead
+		SetConfig(config *Config) error
+		SetLevel(level Level) error
+		Debug(args ...interface{})
+		Debugf(format string, args ...interface{})
+		Debugw(msg string, KV KV)
+		Info(args ...interface{})
+		Infof(format string, args ...interface{})
+		Infow(msg string, KV KV)
+		Warn(args ...interface{})
 		Warnf(format string, args ...interface{})
 		Warnw(msg string, KV KV)
 		Error(args ...interface{})
 		Errorf(format string, args ...interface{})
 		Errorw(msg string, KV KV)
-		Fatal(args ...interface{}) // this used to log the fatal message
+		Fatal(args ...interface{})
 		Fatalf(format string, args ...interface{})
 		Fatalw(msg string, KV KV)
 	}
+
+	// Level of log
+	Level int
+
+	// Config of logger
+	Config struct {
+		Level      Level
+		LogFile    string
+		TimeFormat string
+		Caller     bool
+		UseColor   bool
+		UseJSON    bool
+	}
 )
 
+// list of log level
 const (
-	// DebugLevel logs are typically voluminous, and are usually disabled in
-	DebugLevel Level = iota // this is the debug level, it will log all the message, iota is the auto increment
-	// InfoLevel is the default logging priority.
+	DebugLevel Level = iota
 	InfoLevel
 	WarnLevel
 	ErrorLevel
 	FatalLevel
 )
 
+// Log level
 const (
 	DebugLevelString = "debug"
 	InfoLevelString  = "info"
@@ -63,11 +67,12 @@ const (
 	FatalLevelString = "fatal"
 )
 
-const DefaultTimeFormat = time.RFC3339 // this is the default time format, time.RFC3339 is the format for the time
+// DefaultTimeFormat of logger
+const DefaultTimeFormat = time.RFC3339
 
-// StringToLevel is the function to convert the string to level
+// StringToLevel to set string to level
 func StringToLevel(level string) Level {
-	switch level {
+	switch strings.ToLower(level) {
 	case DebugLevelString:
 		return DebugLevel
 	case InfoLevelString:
@@ -79,21 +84,39 @@ func StringToLevel(level string) Level {
 	case FatalLevelString:
 		return FatalLevel
 	default:
+		// TODO: make this more informative when happened
 		return InfoLevel
 	}
 }
 
+// LevelToString convert log level to readable string
+func LevelToString(l Level) string {
+	switch l {
+	case DebugLevel:
+		return DebugLevelString
+	case InfoLevel:
+		return InfoLevelString
+	case WarnLevel:
+		return WarnLevelString
+	case ErrorLevel:
+		return ErrorLevelString
+	case FatalLevel:
+		return FatalLevelString
+	default:
+		return InfoLevelString
+	}
+}
+
+// CreateLogFile create a file and return io.Writer for file manipulation
 func CreateLogFile(filename string) (*os.File, error) {
-	err := os.MkdirAll(filepath.Dir(filename), 0744) // this used to create the directory for the log file
+	err := os.MkdirAll(filepath.Dir(filename), 0744)
+	if err != nil && err != os.ErrExist {
+		return nil, err
+	}
+	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
-		fmt.Println("error while creating the directory for the log file", err)
 		return nil, err
 	}
 
-	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644) // this used to create the log file
-	if err != nil {
-		fmt.Println("error while creating the log file", err)
-		return nil, err
-	}
 	return file, nil
 }

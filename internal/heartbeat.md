@@ -295,10 +295,10 @@ Zutto tōku ni mite ita
 ずっと先の未来は
 Zutto saki no mirai wa
 
-ずっと近くに来ている
+ずっと 近くに来ている
 Zutto chikaku ni kite iru
 
-ずっとずっと
+ずっと ずっと
 Zuttozutto
 
 Tôi đã nhìn xa xăm
@@ -306,16 +306,16 @@ Tương lai xa
 Nó đang tiến gần hơn
 mãi mãi
 
-ずっと前から僕が
-Zuttomaekara boku ga
+ずっと 前から僕が
+Zutto maekara boku ga
 
-ずっと探していたものは
+ずっと 探していたものは
 Zutto sagashite ita mono wa
 
-ずっと近くにあったんだ
+ずっと 近くにあったんだ
 Zutto chikaku ni atta nda
 
-ずっとずっと
+ずっと ずっと
 Zuttozutto
 
 Cách đây rất lâu tôi
