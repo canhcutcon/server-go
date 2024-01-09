@@ -165,126 +165,338 @@ Constraints:
 1 <= nums[i] <= 106
 */
 
-func removeIndex(s []int, index int) []int {
-	if index < 0 || index >= len(s) {
-		return s
-	}
-	return append(s[:index], s[index+1:]...)
+// func removeIndex(s []int, index int) []int {
+// 	if index < 0 || index >= len(s) {
+// 		return s
+// 	}
+// 	return append(s[:index], s[index+1:]...)
+// }
+
+// func remove(s []int, value int, quality int) []int {
+// 	for i := len(s) - 1; i >= 0; i-- {
+// 		if s[i] == value {
+// 			s = append(s[:i], s[i+1:]...)
+// 			quality--
+// 			if quality == 0 {
+// 				break
+// 			}
+// 		}
+// 	}
+// 	return s
+// }
+
+// func minOperations(nums []int) int {
+// 	if len(nums) < 2 || len(nums) > 100000 {
+// 		return -1
+// 	}
+
+// 	sort.Ints(nums)
+
+// 	count := 0
+// 	m := make(map[int]int)
+
+// 	sort.Ints(make([]int, 0))
+
+// 	for _, v := range nums {
+// 		m[v]++
+// 	}
+
+// 	l := len(nums)
+// 	i := 0
+// 	for l > 0 {
+// 		dup := m[nums[i]]
+// 		if dup <= 1 {
+// 			return -1
+// 		}
+
+// 		if dup == 3 || dup == 2 {
+// 			count++
+// 			l -= dup
+// 			m[nums[i]] -= dup
+// 			// nums = remove(nums, nums[0], dup)
+// 			i += dup
+// 		} else {
+// 			if dup-3 != 1 {
+// 				m[nums[i]] -= 3
+// 				l -= 3
+// 				// nums = remove(nums, nums[0], 3)
+// 				i += 3
+// 			} else {
+// 				m[nums[i]] -= 2
+// 				l -= 2
+// 				i += 2
+// 				// nums = remove(nums, nums[0], 2)
+// 			}
+// 			count++
+// 		}
+// 	}
+// 	// if len(m) == 1 {
+// 	// 	dup := len(nums)
+// 	// 	if dup <= 1 {
+// 	// 		return -1
+// 	// 	}
+// 	// 	for dup > 0 {
+// 	// 		if dup == 3 || dup == 2 {
+// 	// 			count++
+// 	// 			dup -= dup
+// 	// 		} else {
+// 	// 			if dup-3 != 1 {
+// 	// 				dup -= 3
+// 	// 			} else {
+// 	// 				dup -= 2
+// 	// 			}
+// 	// 			count++
+
+// 	// 		}
+// 	// 	}
+// 	// 	return count
+// 	// } else {
+// 	// 	for l > 0 {
+// 	// 		dup := m[nums[0]]
+// 	// 		if dup <= 1 {
+// 	// 			return -1
+// 	// 		}
+// 	// 		if dup == 3 || dup == 2 {
+// 	// 			count++
+// 	// 			l -= dup
+// 	// 			m[nums[0]] -= dup
+// 	// 			nums = remove(nums, nums[0], dup)
+// 	// 		} else {
+// 	// 			if dup-3 != 1 {
+// 	// 				m[nums[0]] -= 3
+// 	// 				l -= 3
+// 	// 				nums = remove(nums, nums[0], 3)
+
+// 	// 			} else {
+// 	// 				m[nums[0]] -= 2
+// 	// 				l -= 2
+// 	// 				nums = remove(nums, nums[0], 2)
+// 	// 			}
+// 	// 			count++
+// 	// 		}
+// 	// 	}
+// 	// }
+
+// 	return count
+
+// }
+
+/*
+300. Longest Increasing Subsequence Medium
+
+Given an integer array nums, return the length of the longest strictly increasing
+subsequence
+.
+
+
+
+Example 1:
+
+Input: nums = [10,9,2,5,3,7,101,18]
+Output: 4
+Explanation: The longest increasing subsequence is [2,3,7,101], therefore the length is 4.
+Example 2:
+
+Input: nums = [0,1,0,3,2,3]
+Output: 4
+Example 3:
+
+Input: nums = [7,7,7,7,7,7,7]
+Output: 1
+
+
+Constraints:
+
+1 <= nums.length <= 2500
+-104 <= nums[i] <= 104
+
+
+Follow up: Can you come up with an algorithm that runs in O(n log(n)) time complexity?
+*/
+
+// func lengthOfLIS(nums []int) int {
+// 	n := []int{}
+// 	i, j := 0, 1
+// 	n = append(n, nums[0])
+// 	for i < len(nums) && j < len(nums) {
+// 		fmt.Println("i j", i, j)
+// 		fmt.Println("nums[i], nums[j], nums[0]", nums[i], nums[j])
+// 		lsv := n[len(n)-1]
+// 		fmt.Println("lsv", len(n), len(nums)/2)
+
+// 		if nums[i] < n[0] {
+// 			if len(n) < len(nums)/2 || len(n) == 1 {
+// 				n = []int{}
+// 				n = append(n, nums[i])
+// 			}
+// 		}
+
+// 		if nums[i] > nums[j] {
+// 			if lsv < nums[i] && nums[i] > n[0] {
+// 				n = append(n, nums[i])
+// 			}
+
+// 		} else {
+// 			if lsv > nums[i] && lsv <= nums[j] && nums[i] > n[0] {
+// 				pre := n[len(n)-1] + n[len(n)-2]
+// 				nex := nums[i] + nums[j]
+// 				if pre <= nex {
+// 					n[len(n)-1] = nums[i]
+// 				}
+// 			}
+
+// 			if (lsv > nums[i] && nums[i] > n[0]) && (lsv > nums[j] && nums[j] > n[0]) {
+// 				pre := n[len(n)-2]
+// 				if pre < nums[i] {
+// 					n[len(n)-1] = nums[i]
+// 				}
+// 			}
+
+// 			if lsv < nums[i] && lsv < nums[j] {
+// 				n = append(n, nums[i])
+// 			}
+// 			if (j == len(nums)-1) && n[len(n)-1] < nums[j] {
+// 				n = append(n, nums[j])
+// 			}
+// 		}
+
+//			i++
+//			j++
+//			fmt.Println("n", n)
+//		}
+//		return len(n)
+//	}
+// func lengthOfLIS(nums []int) int {
+// 	if len(nums) == 0 {
+// 		return 0
+// 	}
+
+// 	n := []int{nums[0]}
+// 	for i := 1; i < len(nums); i++ {
+// 		fmt.Println("n", n)
+// 		if nums[i] > n[len(n)-1] {
+// 			n = append(n, nums[i])
+// 		} else {
+// 			// Find the position to insert the current number in the sorted sequence
+// 			left, right := 0, len(n)-1
+// 			for left < right {
+// 				fmt.Println("left right", left, right)
+// 				fmt.Println("n[left] n[right]", n[left], n[right])
+// 				mid := left + (right-left)/2
+// 				fmt.Println("mid", mid)
+// 				if n[mid] < nums[i] {
+// 					left = mid + 1
+// 				} else {
+// 					right = mid
+// 				}
+// 			}
+
+// 			// Replace the element at the found position with the current number
+// 			n[left] = nums[i]
+// 		}
+// 	}
+
+// 	return len(n)
+// }
+
+// func lengthOfLIS(nums []int) int {
+// 	list := []int{nums[0]}
+// 	index := 1
+// 	for i := 1; i < len(nums); i++ {
+// 		index = binarySearch(list, 0, len(list), nums[i])
+// 		if index == len(list) {
+// 			list = append(list, nums[i])
+// 		} else {
+// 			list[index] = nums[i]
+// 		}
+// 	}
+// 	return len(list)
+// }
+
+//	func binarySearch(list []int, left, right, target int) int {
+//		for left < right {
+//			mid := (left + right) / 2
+//			if list[mid] == target {
+//				return mid
+//			}
+//			if list[mid] > target {
+//				right = mid
+//			} else {
+//				left = mid + 1
+//			}
+//		}
+//		return left
+//	}
+
+/*
+872 Leaf-Similar Trees Easy
+
+Consider all the leaves of a binary tree, from left to right order, the values of those leaves form a leaf value sequence.
+
+
+*/
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
 }
 
-func remove(s []int, value int, quality int) []int {
-	for i := len(s) - 1; i >= 0; i-- {
-		if s[i] == value {
-			s = append(s[:i], s[i+1:]...)
-			quality--
-			if quality == 0 {
-				break
-			}
-		}
+func getLeafNode(root *TreeNode) []int {
+	leaf := []int{}
+	if root == nil {
+		return leaf
 	}
-	return s
+
+	if root.Left == nil && root.Right == nil {
+		leaf = append(leaf, root.Val)
+	}
+
+	leaf = append(leaf, getLeafNode(root.Left)...)
+	leaf = append(leaf, getLeafNode(root.Right)...)
+	return leaf
 }
 
-func minOperations(nums []int) int {
-	if len(nums) < 2 || len(nums) > 100000 {
-		return -1
+func leafSimilar(root1 *TreeNode, root2 *TreeNode) bool {
+	if root1 == nil || root2 == nil {
+		return false
 	}
 
-	sort.Ints(nums)
+	// 1. get leaf node of root1
+	leaf1 := getLeafNode(root1)
+	leaf2 := getLeafNode(root2)
 
-	count := 0
-	m := make(map[int]int)
+	fmt.Println(leaf1)
+	fmt.Println(leaf2)
 
-	sort.Ints(make([]int, 0))
-
-	for _, v := range nums {
-		m[v]++
+	if len(leaf1) != len(leaf2) {
+		return false
 	}
 
-	l := len(nums)
-	i := 0
-	for l > 0 {
-		dup := m[nums[i]]
-		if dup <= 1 {
-			return -1
-		}
-
-		if dup == 3 || dup == 2 {
-			count++
-			l -= dup
-			m[nums[i]] -= dup
-			// nums = remove(nums, nums[0], dup)
-			i += dup
-		} else {
-			if dup-3 != 1 {
-				m[nums[i]] -= 3
-				l -= 3
-				// nums = remove(nums, nums[0], 3)
-				i += 3
-			} else {
-				m[nums[i]] -= 2
-				l -= 2
-				i += 2
-				// nums = remove(nums, nums[0], 2)
-			}
-			count++
+	for i := 0; i < len(leaf1); i++ {
+		if leaf1[i] != leaf2[i] {
+			return false
 		}
 	}
-	// if len(m) == 1 {
-	// 	dup := len(nums)
-	// 	if dup <= 1 {
-	// 		return -1
-	// 	}
-	// 	for dup > 0 {
-	// 		if dup == 3 || dup == 2 {
-	// 			count++
-	// 			dup -= dup
-	// 		} else {
-	// 			if dup-3 != 1 {
-	// 				dup -= 3
-	// 			} else {
-	// 				dup -= 2
-	// 			}
-	// 			count++
 
-	// 		}
-	// 	}
-	// 	return count
-	// } else {
-	// 	for l > 0 {
-	// 		dup := m[nums[0]]
-	// 		if dup <= 1 {
-	// 			return -1
-	// 		}
-	// 		if dup == 3 || dup == 2 {
-	// 			count++
-	// 			l -= dup
-	// 			m[nums[0]] -= dup
-	// 			nums = remove(nums, nums[0], dup)
-	// 		} else {
-	// 			if dup-3 != 1 {
-	// 				m[nums[0]] -= 3
-	// 				l -= 3
-	// 				nums = remove(nums, nums[0], 3)
-
-	// 			} else {
-	// 				m[nums[0]] -= 2
-	// 				l -= 2
-	// 				nums = remove(nums, nums[0], 2)
-	// 			}
-	// 			count++
-	// 		}
-	// 	}
-	// }
-
-	return count
-
+	return true
 }
 
 func main() {
-	fmt.Println("minOperations", minOperations([]int{3, 14, 3, 14, 3, 14, 14, 3, 3, 14, 14, 14, 3, 14, 14, 3, 14, 14, 14, 3}))
+	// fmt.Println("minOperations", minOperations([]int{3, 14, 3, 14, 3, 14, 14, 3, 3, 14, 14, 14, 3, 14, 14, 3, 14, 14, 14, 3}))
 	// fmt.Println("minOperations", minOperations([]int{3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}))
-	fmt.Println("minOperations", minOperations([]int{2, 1, 2, 2, 3, 3}))
+	// fmt.Println("minOperations", minOperations([]int{2, 1, 2, 2, 3, 3}))
 	// fmt.Println("minOperations", minOperations([]int{2, 3, 3, 2, 2, 4, 2, 3, 4}))
-	fmt.Println("minOperations", minOperations([]int{16, 16, 16, 19, 16, 3, 16, 8, 16, 16, 16, 19, 3, 16, 16}))
+	// fmt.Println("minOperations", minOperations([]int{16, 16, 16, 19, 16, 3, 16, 8, 16, 16, 16, 19, 3, 16, 16}))
+	// fmt.Println("lengthOfLIS", lengthOfLIS([]int{10, 9, 2, 5, 3, 7, 101, 18}))
+	// fmt.Println("lengthOfLIS", lengthOfLIS([]int{0, 1, 0, 3, 2, 3}))
+	// fmt.Println("lengthOfLIS", lengthOfLIS([]int{10, 9, 2, 5, 3, 4}))
+	// fmt.Println("lengthOfLIS", lengthOfLIS([]int{1, 3, 6, 7, 9, 4, 10, 5, 6}))
+	// fmt.Println("lengthOfLIS", lengthOfLIS([]int{2, 15, 3, 7, 8, 6, 18}))
+	// fmt.Println("lengthOfLIS", lengthOfLIS([]int{11, 12, 13, 14, 15, 6, 7, 8, 101, 18}))
+	// fmt.Println("lengthOfLIS", lengthOfLIS([]int{10, 22, 9, 33, 21, 50, 41, 60, 80}))
+	// root1 = [3,5,1,6,2,9,8,null,null,7,4], root2 = [3,5,1,6,7,4,2,null,null,null,null,null,null,9,8]
+	fmt.Println("Similar", leafSimilar(&TreeNode{Val: 3, Left: &TreeNode{Val: 2}, Right: &TreeNode{Val: 3}}, &TreeNode{Val: 1, Left: &TreeNode{Val: 3}, Right: &TreeNode{Val: 2}}))
+	fmt.Println("Similar", leafSimilar(&TreeNode{Val: 1, Left: &TreeNode{Val: 2}, Right: &TreeNode{Val: 3}}, &TreeNode{Val: 1, Left: &TreeNode{Val: 3}, Right: &TreeNode{Val: 2}}))
+	fmt.Println("Similar", leafSimilar(&TreeNode{Val: 1, Left: &TreeNode{Val: 2}, Right: &TreeNode{Val: 3}}, &TreeNode{Val: 1, Left: &TreeNode{Val: 3}, Right: &TreeNode{Val: 2}}))
 }

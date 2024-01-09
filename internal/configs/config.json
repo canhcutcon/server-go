@@ -45,5 +45,10 @@
   },
   "geocode": {
     "rapi_api_key": "62e6335913msh7b5181fb2ba5a59p116e14jsncd946f210030"
+  },
+  "log": {
+    "level": "debug",
+    "path": "./logs",
+    "filename": "server.log"
   }
 }

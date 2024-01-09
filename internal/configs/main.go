@@ -1,7 +1,6 @@
 package configs
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/spf13/viper"
@@ -57,6 +56,11 @@ type Config struct {
 	GeoCode struct {
 		RapidApiKey string `mapstructure:"rapid_api_key" default:""`
 	} `mapstructure:"geocode"`
+	Log struct {
+		Path     string `mapstructure:"path" default:"./logs"`
+		FileName string `mapstructure:"filename" default:"app.log"`
+		Level    string `mapstructure:"level" default:"debug"`
+	} `mapstructure:"log"`
 }
 
 // Path: configs/main.go
@@ -67,6 +71,7 @@ func GetConfig() Config {
 	if configuration == (Config{}) { // if the configuration is empty, then load the configuration
 		LoadAllConfigurations()
 	}
+
 	return configuration
 }
 
@@ -89,8 +94,6 @@ func LoadAllConfigurations() error {
 
 	key := GetAllKeys()
 	for _, k := range key {
-		// log.Info("Load config key::", k)
-		fmt.Println("Load config key::", k)
 		viper.SetDefault(k, viper.Get(k))
 	}
 	return viper.Unmarshal(&configuration) // Find and read the config file
