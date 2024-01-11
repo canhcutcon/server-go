@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"sort"
 )
 
@@ -442,44 +443,122 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
-func getLeafNode(root *TreeNode) []int {
-	leaf := []int{}
+// func getLeafNode(root *TreeNode) []int {
+// 	leaf := []int{}
+// 	if root == nil {
+// 		return leaf
+// 	}
+
+// 	if root.Left == nil && root.Right == nil {
+// 		leaf = append(leaf, root.Val)
+// 	}
+
+// 	leaf = append(leaf, getLeafNode(root.Left)...)
+// 	leaf = append(leaf, getLeafNode(root.Right)...)
+// 	return leaf
+// }
+
+// func leafSimilar(root1 *TreeNode, root2 *TreeNode) bool {
+// 	if root1 == nil || root2 == nil {
+// 		return false
+// 	}
+
+// 	// 1. get leaf node of root1
+// 	leaf1 := getLeafNode(root1)
+// 	leaf2 := getLeafNode(root2)
+
+// 	fmt.Println(leaf1)
+// 	fmt.Println(leaf2)
+
+// 	if len(leaf1) != len(leaf2) {
+// 		return false
+// 	}
+
+// 	for i := 0; i < len(leaf1); i++ {
+// 		if leaf1[i] != leaf2[i] {
+// 			return false
+// 		}
+// 	}
+
+// 	return true
+// }
+
+//====================================================
+/*
+2385. Amount of Time for Binary Tree to Be Infected
+
+*/
+
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+
+//  int traverse(TreeNode* root, int start) {
+//         int depth = 0;
+//         if (root == nullptr) {
+//             return depth;
+//         }
+
+//         int leftDepth = traverse(root->left, start);
+//         int rightDepth = traverse(root->right, start);
+
+//         if (root->val == start) { // start infection if val == start then compare left and right depth
+//             maxDistance = max(leftDepth, rightDepth);
+//             depth = -1; // depth = -1 means the infection has started
+//         } else if (leftDepth >= 0 && rightDepth >= 0) { // if left and right depth >= 0 then compare left and right depth
+//             depth = max(leftDepth, rightDepth) + 1; // depth = max(leftDepth, rightDepth) + 1 means the infection has not started
+//         } else {
+//             int distance = abs(leftDepth) + abs(rightDepth); // if left or right depth < 0 then calculate the distance
+//             maxDistance = max(maxDistance, distance); // update the maxDistance
+//             depth = min(leftDepth, rightDepth) - 1;
+//         }
+
+//	    return depth;
+//	}
+var maxDistance int
+
+func traversal(root *TreeNode, start int) int {
+	depth := 0
+	// maxDistance := 0
 	if root == nil {
-		return leaf
+		return maxDistance
 	}
 
-	if root.Left == nil && root.Right == nil {
-		leaf = append(leaf, root.Val)
-	}
+	left := traversal(root.Left, start)
+	right := traversal(root.Right, start)
+	fmt.Println("left right", left, right)
 
-	leaf = append(leaf, getLeafNode(root.Left)...)
-	leaf = append(leaf, getLeafNode(root.Right)...)
-	return leaf
+	if root.Val == start {
+		maxDistance = max(left, right)
+		depth = -1
+	} else if left >= 0 && right >= 0 {
+		depth = max(left, right) + 1
+	} else {
+		distance := math.Abs(float64(left)) + math.Abs(float64(right))
+		maxDistance = max(maxDistance, int(distance))
+		depth = min(left, right) - 1
+	}
+	fmt.Println("maxDistance", maxDistance)
+
+	return depth
 }
 
-func leafSimilar(root1 *TreeNode, root2 *TreeNode) bool {
-	if root1 == nil || root2 == nil {
-		return false
+func max(a, b int) int {
+	if a > b {
+		return a
 	}
+	return b
+}
 
-	// 1. get leaf node of root1
-	leaf1 := getLeafNode(root1)
-	leaf2 := getLeafNode(root2)
-
-	fmt.Println(leaf1)
-	fmt.Println(leaf2)
-
-	if len(leaf1) != len(leaf2) {
-		return false
-	}
-
-	for i := 0; i < len(leaf1); i++ {
-		if leaf1[i] != leaf2[i] {
-			return false
-		}
-	}
-
-	return true
+func amountOfTime(root *TreeNode, start int) int {
+	fmt.Println("maxDistance", traversal(root, start))
+	fmt.Println("maxDistance in main", maxDistance)
+	return maxDistance
 }
 
 func main() {
@@ -496,7 +575,8 @@ func main() {
 	// fmt.Println("lengthOfLIS", lengthOfLIS([]int{11, 12, 13, 14, 15, 6, 7, 8, 101, 18}))
 	// fmt.Println("lengthOfLIS", lengthOfLIS([]int{10, 22, 9, 33, 21, 50, 41, 60, 80}))
 	// root1 = [3,5,1,6,2,9,8,null,null,7,4], root2 = [3,5,1,6,7,4,2,null,null,null,null,null,null,9,8]
-	fmt.Println("Similar", leafSimilar(&TreeNode{Val: 3, Left: &TreeNode{Val: 2}, Right: &TreeNode{Val: 3}}, &TreeNode{Val: 1, Left: &TreeNode{Val: 3}, Right: &TreeNode{Val: 2}}))
-	fmt.Println("Similar", leafSimilar(&TreeNode{Val: 1, Left: &TreeNode{Val: 2}, Right: &TreeNode{Val: 3}}, &TreeNode{Val: 1, Left: &TreeNode{Val: 3}, Right: &TreeNode{Val: 2}}))
-	fmt.Println("Similar", leafSimilar(&TreeNode{Val: 1, Left: &TreeNode{Val: 2}, Right: &TreeNode{Val: 3}}, &TreeNode{Val: 1, Left: &TreeNode{Val: 3}, Right: &TreeNode{Val: 2}}))
+	// fmt.Println("Similar", leafSimilar(&TreeNode{Val: 3, Left: &TreeNode{Val: 2}, Right: &TreeNode{Val: 3}}, &TreeNode{Val: 1, Left: &TreeNode{Val: 3}, Right: &TreeNode{Val: 2}}))
+	// fmt.Println("Similar", leafSimilar(&TreeNode{Val: 1, Left: &TreeNode{Val: 2}, Right: &TreeNode{Val: 3}}, &TreeNode{Val: 1, Left: &TreeNode{Val: 3}, Right: &TreeNode{Val: 2}}))
+	// fmt.Println("Similar", leafSimilar(&TreeNode{Val: 1, Left: &TreeNode{Val: 2}, Right: &TreeNode{Val: 3}}, &TreeNode{Val: 1, Left: &TreeNode{Val: 3}, Right: &TreeNode{Val: 2}}))
+
 }

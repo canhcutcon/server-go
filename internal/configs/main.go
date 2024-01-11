@@ -13,7 +13,7 @@ type Config struct {
 	} `mapstructure:"database"`
 	Port string `mapstructure:"port" default:":8080"`
 	Jwt  struct {
-		Secrect string `mapstructure:"secrect" default:"secrect"`
+		Secret  string `mapstructure:"secret" default:"secret"`
 		Expires int64  `mapstructure:"expires" default:"3600"`
 	} `mapstructure:"jwt"`
 
@@ -61,6 +61,14 @@ type Config struct {
 		FileName string `mapstructure:"filename" default:"app.log"`
 		Level    string `mapstructure:"level" default:"debug"`
 	} `mapstructure:"log"`
+	Postgres struct {
+		Host     string `mapstructure:"host" default:"localhost"`
+		Port     string `mapstructure:"port" default:"5432"`
+		Username string `mapstructure:"username" default:"postgres"`
+		Password string `mapstructure:"password" default:"postgres"`
+		Database string `mapstructure:"database" default:"postgres"`
+		SSLMode  string `mapstructure:"sslMode" default:"disable"`
+	} `mapstructure:"postgreq"`
 }
 
 // Path: configs/main.go
